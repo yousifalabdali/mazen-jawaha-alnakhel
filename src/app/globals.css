@@ -1,26 +1,65 @@
 @import "tailwindcss";
 
+/* هوية جوهرة النخيل: حبر على ورق، ولمسة بني التمر */
+@theme {
+  --color-ink: #262422;
+  --color-ink-soft: #57514b;
+  --color-ink-mute: #8a8279;
+  --color-paper: #f4f1ea;
+  --color-paper-deep: #ebe5d8;
+  --color-card: #fbf9f4;
+  --color-line: #dcd4c4;
+  --color-date: #6b4226;
+  --color-date-deep: #4e2f1b;
+  --color-date-soft: #f1e6dc;
+  --color-gold: #b08d57;
+  --color-danger: #9b2c2c;
+  --color-danger-soft: #f6e3e1;
+  --color-ok: #3e6b3a;
+  --color-ok-soft: #e4eedf;
+
+  --font-sans: var(--font-plex), system-ui, sans-serif;
+  --font-display: var(--font-ruqaa), var(--font-plex), serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* ملمس ورق خفيف */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.15  0 0 0 0 0.14  0 0 0 0 0.13  0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  font-feature-settings: "tnum" 1;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+@media print {
+  body {
+    background: #fff !important;
+    background-image: none !important;
+  }
+  .no-print {
+    display: none !important;
+  }
 }

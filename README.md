@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# جوهرة النخيل — نظام المبيعات والإدارة
 
-## Getting Started
+نظام لمحل تغليف وتشكيل التمور: نقطة بيع، إدارة منتجات ومخزون، طباعة فواتير (حرارية 80mm و A4)، وشاشة عرض للعملاء.
 
-First, run the development server:
+مبني بـ **Next.js (Node.js)** و **Supabase**.
+
+## التشغيل
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # للتطوير: http://localhost:3000
+npm run build && npm start   # للتشغيل الفعلي
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+ملف `.env.local` يحتوي على:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| المتغير | الوصف |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | رابط مشروع Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | المفتاح العام (publishable) |
+| `SUPABASE_SERVICE_ROLE_KEY` | **سري** — من Supabase ← Project Settings ← API Keys. مطلوب لإضافة الموظفين وتغيير كلمات المرور فقط |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## الصفحات
 
-## Learn More
+| الرابط | لمن | الوظيفة |
+|---|---|---|
+| `/login` | الجميع | تسجيل الدخول |
+| `/pos` | الكاشير والمدير | البيع بالوزن أو بالحبة، الخصم، تشغيل/إيقاف الضريبة، كاش أو شبكة |
+| `/admin` | المدير | ملخص المبيعات وتنبيهات المخزون |
+| `/admin/products` | المدير | المنتجات، الصور، الأسعار، التكلفة، الباركود، الظهور في شاشة العرض |
+| `/admin/products/labels` | المدير | طباعة ملصقات الباركود |
+| `/admin/categories` | المدير | الأقسام وترتيبها |
+| `/admin/inventory` | المدير | التوريد، الجرد، سجل الحركات |
+| `/admin/invoices` | المدير | البحث، إعادة الطباعة، إلغاء الفاتورة (يرجع المخزون) |
+| `/admin/users` | المدير | إضافة كاشير، تعطيل، تغيير كلمة المرور |
+| `/admin/settings` | المدير | بيانات المحل، الرقم الضريبي، الضريبة الافتراضية، مدة تقليب الشاشة |
+| `/display` | عام | شاشة التلفزيون للعملاء — تتحدث تلقائياً عند أي تعديل |
 
-To learn more about Next.js, take a look at the following resources:
+## الطابعة الحرارية (80mm)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+في نافذة الطباعة بالمتصفح:
+- اختر الطابعة الحرارية
+- الهوامش: **بدون (None)**
+- المقاس: 80mm (أو "Roll Paper 80 × 297mm")
+- ألغِ "الرأس والتذييل" (Headers and footers)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+لطباعة بدون نافذة في Chrome: شغّله بالخيار `--kiosk-printing`.
 
-## Deploy on Vercel
+## شاشة العرض
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+افتح `/display` على متصفح التلفزيون واضغط على الشاشة مرة لتعمل بملء الشاشة. أي منتج تضيفه أو سعر تعدله يظهر خلال ثوانٍ.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## العملة والضريبة
+
+- الأسعار بـ **الريال العماني** بثلاث خانات عشرية (بيسة)، مثال: `4.500 ر.ع`.
+- ضريبة القيمة المضافة **5%** افتراضياً، ويمكن تشغيلها أو إيقافها لكل فاتورة من نقطة البيع.
+- الأسعار شاملة الضريبة افتراضياً (يمكن تغييره من الإعدادات).
+- أدخل الرقم الضريبي (مثل `OM1100000000`) من صفحة الإعدادات ليظهر في الفاتورة.
+
+## الباركود
+
+**القارئ:** أي قارئ باركود USB أو بلوتوث يعمل كلوحة مفاتيح (الوضع الافتراضي لمعظم القارئات). في نقطة البيع امسح مباشرة بدون الضغط على أي حقل:
+- منتج بالحبة ← يُضاف للفاتورة (المسح المتكرر يزيد الكمية).
+- منتج بالوزن ← تفتح نافذة الوزن.
+- **ملصق ميزان** (EAN-13 يبدأ بـ 2، مثل `21 00012 00750 x`) ← يُضاف المنتج بالوزن المطبوع مباشرة. اكتب رقم PLU من 5 أرقام في حقل باركود المنتج الموزون.
+
+**الأكواد:** كل منتج يأخذ باركود EAN-13 داخلي تلقائياً (يبدأ بـ 200). يمكنك استبداله بباركود المصنع بمسحه داخل حقل "الباركود" في نموذج المنتج.
+
+**الطباعة:** من صفحة المنتجات حدد المنتجات ← "طباعة باركود"، ثم اختر المقاس:
+- ملصق 50×30 أو 40×25 مم لطابعات الملصقات الحرارية (Xprinter، Zebra، TSC…) — اضبط مقاس الورق في إعدادات الطابعة على نفس المقاس والهوامش "بدون".
+- ورق A4 بـ 24 ملصقاً (3 × 8).
+
+## قاعدة البيانات
+
+ملفات الهجرة في `supabase/migrations/`. الأمان مطبق على مستوى قاعدة البيانات (RLS):
+- الكاشير لا يرى التكلفة ولا يعدل الأسعار، ويرى فواتيره فقط.
+- الفاتورة تُحسب في قاعدة البيانات من الأسعار المحفوظة (لا يمكن التلاعب بالسعر من المتصفح).
+- الحسابات الجديدة معطلة حتى يفعلها المدير.
+
+## إنشاء مدير جديد من سطر الأوامر
+
+```bash
+node --env-file=.env.local scripts/create-admin.mjs "الاسم" email@example.com "كلمة-المرور"
+```
+
+## إعادة توليد الشعار
+
+```bash
+node scripts/prepare-logo.mjs "../شعار محل مازن.jpeg"
+```
