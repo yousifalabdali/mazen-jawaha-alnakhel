@@ -12,7 +12,7 @@ export function Logo({
   return (
     <img
       src={variant === "ink" ? "/logo-ink.png" : "/logo-light.png"}
-      alt="جوهرة النخيل"
+      alt="جواهر النخيل"
       width={size}
       height={Math.round(size * 1.22)}
       className={className}

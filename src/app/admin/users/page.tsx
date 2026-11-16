@@ -4,7 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { Profile } from "@/lib/types";
 import UsersClient from "./UsersClient";
 
-export const metadata = { title: "المستخدمون — جوهرة النخيل" };
+export const metadata = { title: "المستخدمون — جواهر النخيل" };
 
 export default async function UsersPage() {
   const me = await requireAdmin();

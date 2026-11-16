@@ -31,8 +31,8 @@ export default function AdminNav({ name }: { name: string }) {
       <div className="flex items-center justify-between gap-3 px-5 py-4 lg:flex-col lg:py-8">
         <Link href="/admin" className="flex items-center gap-3 lg:flex-col">
           <Logo variant="light" size={44} className="lg:hidden" />
-          <Logo variant="light" size={110} className="hidden lg:block" />
-          <span className="font-display text-xl lg:hidden">جوهرة النخيل</span>
+          <Logo variant="light" size={96} className="hidden lg:block" />
+          <span className="font-display text-xl lg:text-2xl">جواهر النخيل</span>
         </Link>
         <Ornament tone="light" className="hidden w-full lg:flex" />
         <Link href="/pos" className="rounded-lg bg-date px-3 py-1.5 text-sm lg:hidden">نقطة البيع</Link>
@@ -57,9 +57,14 @@ export default function AdminNav({ name }: { name: string }) {
         <Link href="/pos" className="flex h-10 items-center justify-center rounded-lg bg-date text-sm font-medium hover:bg-date-deep">
           فتح نقطة البيع
         </Link>
-        <a href="/display" target="_blank" className="flex h-10 items-center justify-center rounded-lg border border-white/15 text-sm text-paper/85 hover:bg-white/8">
-          شاشة العرض ↗
-        </a>
+        <div className="grid grid-cols-2 gap-2">
+          <a href="/display" target="_blank" className="flex h-10 items-center justify-center rounded-lg border border-white/15 text-sm text-paper/85 hover:bg-white/8">
+            شاشة الصور ↗
+          </a>
+          <a href="/prices" target="_blank" className="flex h-10 items-center justify-center rounded-lg border border-white/15 text-sm text-paper/85 hover:bg-white/8">
+            شاشة الأسعار ↗
+          </a>
+        </div>
         <div className="flex items-center justify-between pt-2 text-xs text-paper/60">
           <span>{name || "المدير"}</span>
           <form action="/logout" method="post">

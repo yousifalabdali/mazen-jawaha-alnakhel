@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Product } from "@/lib/types";
 import InventoryClient, { type Movement } from "./InventoryClient";
 
-export const metadata = { title: "المخزون — جوهرة النخيل" };
+export const metadata = { title: "المخزون — جواهر النخيل" };
 
 export default async function InventoryPage() {
   const supabase = await createClient();

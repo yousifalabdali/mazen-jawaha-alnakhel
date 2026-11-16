@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Product, Settings } from "@/lib/types";
 import LabelsClient from "./LabelsClient";
 
-export const metadata = { title: "طباعة الباركود — جوهرة النخيل" };
+export const metadata = { title: "طباعة الباركود — جواهر النخيل" };
 
 export default async function LabelsPage({ searchParams }: { searchParams: Promise<{ ids?: string }> }) {
   const { ids } = await searchParams;

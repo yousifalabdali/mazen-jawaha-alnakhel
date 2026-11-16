@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Category, Product } from "@/lib/types";
 import ProductsClient from "./ProductsClient";
 
-export const metadata = { title: "المنتجات — جوهرة النخيل" };
+export const metadata = { title: "المنتجات — جواهر النخيل" };
 
 export default async function ProductsPage() {
   const supabase = await createClient();

@@ -1,7 +1,7 @@
 import { Logo, Ornament } from "@/components/Logo";
 import LoginForm from "./LoginForm";
 
-export const metadata = { title: "تسجيل الدخول — جوهرة النخيل" };
+export const metadata = { title: "تسجيل الدخول — جواهر النخيل" };
 
 export default function LoginPage() {
   return (

@@ -6,7 +6,7 @@ import { formatDateTime, formatMoney, formatQty, roundMoney } from "@/lib/money"
 import type { Invoice, InvoiceItem, Settings } from "@/lib/types";
 import PrintActions from "./PrintActions";
 
-export const metadata = { title: "طباعة فاتورة — جوهرة النخيل" };
+export const metadata = { title: "طباعة فاتورة — جواهر النخيل" };
 export const dynamic = "force-dynamic";
 
 export default async function PrintInvoicePage({

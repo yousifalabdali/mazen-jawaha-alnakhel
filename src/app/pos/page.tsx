@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Category, Product, Settings } from "@/lib/types";
 import PosClient from "./PosClient";
 
-export const metadata = { title: "نقطة البيع — جوهرة النخيل" };
+export const metadata = { title: "نقطة البيع — جواهر النخيل" };
 export const dynamic = "force-dynamic";
 
 export default async function PosPage() {

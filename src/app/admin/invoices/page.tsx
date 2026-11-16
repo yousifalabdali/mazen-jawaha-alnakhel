@@ -4,7 +4,7 @@ import { formatDateTime, formatMoney, roundMoney } from "@/lib/money";
 import { Badge, Card, PageHeader } from "@/components/ui";
 import VoidButton from "./VoidButton";
 
-export const metadata = { title: "الفواتير — جوهرة النخيل" };
+export const metadata = { title: "الفواتير — جواهر النخيل" };
 
 type Row = {
   id: string;

@@ -4,7 +4,7 @@ import { formatDateTime, formatMoney, roundMoney, round3, unitLabel } from "@/li
 import type { Invoice, Product } from "@/lib/types";
 import { Badge, Card, PageHeader } from "@/components/ui";
 
-export const metadata = { title: "لوحة الإدارة — جوهرة النخيل" };
+export const metadata = { title: "لوحة الإدارة — جواهر النخيل" };
 
 const DAY = 86_400_000;
 const TZ_OFFSET = 4 * 3_600_000;
@@ -63,7 +63,7 @@ export default async function AdminHome() {
             <tbody className="divide-y divide-line">
               {((recent ?? []) as Invoice[]).map((inv) => (
                 <tr key={inv.id}>
-                  <td className="num py-2.5 font-medium">#{inv.invoice_no}</td>
+                  <td className="num py-2.5 pl-4 font-medium">#{inv.invoice_no}</td>
                   <td className="py-2.5 text-ink-mute">{formatDateTime(inv.created_at)}</td>
                   <td className="py-2.5">{inv.payment_method === "cash" ? "كاش" : "شبكة"}</td>
                   <td className="py-2.5">{inv.status === "void" && <Badge tone="danger">ملغاة</Badge>}</td>

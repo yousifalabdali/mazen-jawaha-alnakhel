@@ -137,7 +137,7 @@ export function Modal({
 
 export function PageHeader({ title, subtitle, actions }: { title: string; subtitle?: string; actions?: ReactNode }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-7 flex flex-wrap items-end justify-between gap-4 border-b border-line/70 pb-5">
       <div>
         <h1 className="font-display text-3xl text-ink leading-tight">{title}</h1>
         {subtitle && <p className="mt-1 text-sm text-ink-mute">{subtitle}</p>}

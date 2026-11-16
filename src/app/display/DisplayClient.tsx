@@ -76,7 +76,7 @@ export default function DisplayClient() {
         <div className="flex items-center gap-[1.5vw]">
           <Logo variant="light" size={88} className="w-[5.2vw]! min-w-14" />
           <div>
-            <div className="font-display text-[3.2vw] leading-none">{menu?.shop_name ?? "جوهرة النخيل"}</div>
+            <div className="font-display text-[3.2vw] leading-none">{menu?.shop_name ?? "جواهر النخيل"}</div>
             <div className="mt-[.6vh] text-[1.15vw] text-paper/60">{menu?.shop_subtitle}</div>
           </div>
         </div>

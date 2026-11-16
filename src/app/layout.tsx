@@ -15,8 +15,8 @@ const plex = IBM_Plex_Sans_Arabic({
 });
 
 export const metadata: Metadata = {
-  title: "جوهرة النخيل",
-  description: "نظام المبيعات والإدارة — جوهرة النخيل لتغليف وتشكيل التمور",
+  title: "جواهر النخيل",
+  description: "نظام المبيعات والإدارة — جواهر النخيل لتغليف وتشكيل التمور",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
