@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { notifyMenuChanged } from "@/lib/broadcast";
 import type { Settings } from "@/lib/types";
-import { Button, Card, ErrorNote, Field, Input, PageHeader, Switch } from "@/components/ui";
+import { Button, Card, ErrorNote, Field, Input, PageHeader, Switch, Textarea } from "@/components/ui";
 
 export default function SettingsClient({ settings }: { settings: Settings }) {
   const router = useRouter();
@@ -51,6 +51,16 @@ export default function SettingsClient({ settings }: { settings: Settings }) {
           <Field label="رقم الجوال"><Input dir="ltr" value={s.phone} onChange={(e) => set("phone", e.target.value)} /></Field>
           <Field label="السجل التجاري"><Input dir="ltr" className="num" value={s.cr_number} onChange={(e) => set("cr_number", e.target.value)} /></Field>
           <Field label="تذييل الفاتورة"><Input value={s.invoice_footer} onChange={(e) => set("invoice_footer", e.target.value)} /></Field>
+        </Card>
+
+        <Card className="grid gap-4 p-6">
+          <h2 className="font-display text-2xl">رسالة الواتساب</h2>
+          <Field
+            label="رسالة «الطلب جاهز» للزبون"
+            hint="تُرسل عند الضغط على «جاهز» في صفحة الطلبات. الكلمات بين الأقواس تُستبدل تلقائياً: {الاسم} {الرقم} {المحل} {الإجمالي}"
+          >
+            <Textarea rows={3} value={s.whatsapp_ready_message} onChange={(e) => set("whatsapp_ready_message", e.target.value)} />
+          </Field>
         </Card>
 
         <Card className="grid gap-4 p-6 sm:grid-cols-2">

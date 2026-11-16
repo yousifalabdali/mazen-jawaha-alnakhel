@@ -9,6 +9,8 @@ import type { Category, PaymentMethod, Product, Profile, Settings } from "@/lib/
 import { Button, ErrorNote, Input, Modal, Switch } from "@/components/ui";
 import { DatePlaceholder, Logo } from "@/components/Logo";
 import { beep, resolveBarcode } from "@/lib/barcode";
+import { useCounterSender, type CounterState } from "@/lib/counter";
+import { normalizePhone } from "@/lib/whatsapp";
 
 interface Line {
   key: string;
@@ -39,6 +41,8 @@ export default function PosClient({
   const [customerOpen, setCustomerOpen] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [isOrder, setIsOrder] = useState(false);
+  const [orderNote, setOrderNote] = useState("");
   const [weighing, setWeighing] = useState<{ product: Product; lineKey?: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -62,6 +66,34 @@ export default function PosClient({
   });
   const paidNum = method === "cash" ? (paid === "" ? totals.total : Number(paid)) : totals.total;
   const change = roundMoney(paidNum - totals.total);
+
+  // شاشة العميل: نفس الفاتورة لحظة بلحظة
+  const [lastSale, setLastSale] = useState<CounterState | null>(null);
+  const cartState: CounterState = {
+    status: lines.length ? "cart" : "idle",
+    items: lines.map((l) => ({
+      key: l.key,
+      name: l.product.name,
+      image: l.product.image_url,
+      saleType: l.product.sale_type,
+      qty: l.qty,
+      price: l.product.price,
+      line: roundMoney(round3(l.qty) * l.product.price),
+    })),
+    subtotal: totals.subtotal,
+    discount: totals.discount,
+    vat: totals.vat,
+    vatRate: Number(settings.vat_rate),
+    vatEnabled,
+    total: totals.total,
+    method,
+    paid: paidNum,
+    change: Math.max(change, 0),
+  };
+  useCounterSender(profile.id, !lines.length && lastSale ? lastSale : cartState);
+  useEffect(() => {
+    if (lines.length) setLastSale(null);
+  }, [lines.length]);
 
   function onProductClick(p: Product) {
     if (p.sale_type === "weight") {
@@ -152,6 +184,8 @@ export default function PosClient({
     setCustomerName("");
     setCustomerPhone("");
     setCustomerOpen(false);
+    setIsOrder(false);
+    setOrderNote("");
     setMethod("cash");
     setVatEnabled(settings.vat_enabled_default);
     setError(null);
@@ -164,6 +198,12 @@ export default function PosClient({
       setError("المبلغ المدفوع أقل من الإجمالي");
       return;
     }
+    const phone = normalizePhone(customerPhone);
+    if (isOrder && !phone) {
+      setCustomerOpen(true);
+      setError("اكتب رقم جوال الزبون الصحيح لإرسال رسالة الجاهزية على الواتساب");
+      return;
+    }
     setBusy(true);
     const supabase = createClient();
     const { data, error } = await supabase.rpc("create_invoice", {
@@ -174,7 +214,7 @@ export default function PosClient({
         payment_method: method,
         paid_amount: method === "cash" ? paidNum : null,
         customer_name: customerName,
-        customer_phone: customerPhone,
+        customer_phone: phone ?? customerPhone,
       },
     });
     if (error || !data) {
@@ -182,8 +222,13 @@ export default function PosClient({
       setBusy(false);
       return;
     }
+    if (isOrder) {
+      const { error: orderErr } = await supabase.rpc("mark_as_order", { p_invoice: data, p_note: orderNote });
+      if (orderErr) setError(`حُفظت الفاتورة لكن لم تُسجل كطلب: ${orderErr.message}`);
+    }
     const { data: inv } = await supabase.from("invoices").select("invoice_no,total,change_amount").eq("id", data).single();
     setSaved({ id: data as string, no: inv?.invoice_no ?? 0, total: Number(inv?.total ?? totals.total), change: Number(inv?.change_amount ?? 0) });
+    setLastSale({ ...cartState, status: "done", invoiceNo: inv?.invoice_no, total: Number(inv?.total ?? totals.total), change: Number(inv?.change_amount ?? 0) });
     setBusy(false);
     reset();
   }
@@ -203,6 +248,15 @@ export default function PosClient({
         </div>
         <div className="flex items-center gap-2 text-sm">
           <span className="hidden text-paper/70 sm:inline">{profile.full_name || "الكاشير"}</span>
+          <Link href="/orders" className="rounded-lg px-3 py-1.5 text-paper/85 hover:bg-white/10">
+            الطلبات
+          </Link>
+          <button
+            onClick={() => window.open("/pos/customer", "customer-screen", "popup,width=1280,height=800")}
+            className="rounded-lg border border-white/15 px-3 py-1.5 text-paper/85 hover:bg-white/10 cursor-pointer"
+          >
+            شاشة العميل ↗
+          </button>
           {profile.role === "admin" && (
             <Link href="/admin" className="rounded-lg px-3 py-1.5 text-paper/85 hover:bg-white/10">
               لوحة الإدارة
@@ -342,13 +396,35 @@ export default function PosClient({
               </label>
             </div>
 
-            <button onClick={() => setCustomerOpen((v) => !v)} className="text-sm text-date hover:underline cursor-pointer">
-              {customerOpen ? "إخفاء بيانات العميل" : "+ بيانات العميل (اختياري)"}
-            </button>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <button onClick={() => setCustomerOpen((v) => !v)} className="text-sm text-date hover:underline cursor-pointer">
+                {customerOpen ? "إخفاء بيانات العميل" : "+ بيانات العميل (اختياري)"}
+              </button>
+              <Switch
+                checked={isOrder}
+                onChange={(v) => {
+                  setIsOrder(v);
+                  if (v) setCustomerOpen(true);
+                }}
+                label="طلب للتجهيز"
+              />
+            </div>
             {customerOpen && (
-              <div className="grid grid-cols-2 gap-2">
-                <Input placeholder="اسم العميل" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
-                <Input placeholder="الجوال" dir="ltr" inputMode="tel" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} />
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <Input placeholder="اسم العميل" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
+                  <Input
+                    placeholder={isOrder ? "الجوال (مطلوب للواتساب)" : "الجوال"}
+                    dir="ltr"
+                    inputMode="tel"
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    className={isOrder && customerPhone && !normalizePhone(customerPhone) ? "border-danger" : ""}
+                  />
+                </div>
+                {isOrder && (
+                  <Input placeholder="ملاحظات التجهيز (مثلاً: تغليف هدية، موعد الاستلام)" value={orderNote} onChange={(e) => setOrderNote(e.target.value)} />
+                )}
               </div>
             )}
 

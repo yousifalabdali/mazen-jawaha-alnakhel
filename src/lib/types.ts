@@ -46,6 +46,7 @@ export interface Settings {
   prices_include_vat: boolean;
   invoice_footer: string;
   display_rotate_seconds: number;
+  whatsapp_ready_message: string;
 }
 
 export interface Invoice {
